@@ -1,6 +1,6 @@
 {
     "name": "DocTools Development Container",
-    "dockerComposeFile": ["docker-compose.yml"],
+    "dockerComposeFile": ["../docker-compose.yml"],
     "service": "servidor-python",
     "workspaceFolder": "/app",
     "shutdownAction": "stopCompose",
@@ -21,5 +21,5 @@
     "remoteEnv": {
         "PYTHONUNBUFFERED": "1"
     },
-    "postCreateCommand": "pip install -r requirements.txt"
+    "postCreateCommand": "pip install -r requirements.txt && cd ../frontend && npm install --legacy-peer-deps && cd ../backend && pip install -r requirements.txt"
 }

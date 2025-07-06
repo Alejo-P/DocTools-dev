@@ -1,6 +1,5 @@
 services:
-  # Frontend de la aplicación
-  # Este servicio construye la imagen del frontend y lo ejecuta en un contenedor
+  # # Frontend (Vite + React)
   servidor-vite:
     build:
       context: ./frontend
@@ -24,8 +23,7 @@ services:
       - REACT_DEV_URL=${REACT_DEV_URL}
 
 
-  # Servidor de la aplicación Python
-  # Este servicio construye la imagen del servidor Python y lo ejecuta en un contenedor
+  # Servidor de backend (Python + FastAPI)
   servidor-python:
     build:
       context: ./backend
@@ -39,8 +37,8 @@ services:
       mysql-server:
         condition: service_healthy
     volumes:
-      - ./backend:/app:cached # 🔥 Usa un volumen administrado por Docker
-      - DocTools:/root/DocTools:cached # 🔥 Usa un volumen administrado por Docker
+      - ./backend:/app:cached
+      - DocTools:/root/DocTools:cached
     environment:
       - DB_URI=${DB_URI}
       - PYTHONUNBUFFERED=1
@@ -68,8 +66,7 @@ services:
       - MAIL_FROM_NAME=${MAIL_FROM_NAME}
 
 
-  # Servidor de base de datos MySQL
-  # Este servicio utiliza la imagen oficial de MySQL y configura un contenedor para la base de datos
+  # Servidor de base de datos MySQL (8.0)
   mysql-server:
     image: mysql:8.0
     container_name: mysql-server
@@ -87,11 +84,10 @@ services:
       retries: 5
       start_period: 40s
     volumes:
-      - mysql:/var/lib/mysql # 🔥 Usa un volumen administrado por Docker
+      - mysql:/var/lib/mysql
 
 
-  # Servidor de administración de bases de datos PHPMyAdmin
-  # Este servicio utiliza la imagen oficial de PHPMyAdmin y lo configura para conectarse al servidor MySQL
+  # Servidor de administración de base de datos (phpMyAdmin)
   phpmyadmin-server:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin-server
