@@ -4,7 +4,7 @@
     "service": "servidor-python",
     "workspaceFolder": "/app",
     "shutdownAction": "stopCompose",
-    "runServices": ["servidor-python", "servidor-vite", "mysql-server"],
+    "runServices": ["servidor-python", "servidor-vite", "mysql-server", "phpmyadmin-server"],
     "customizations": {
         "vscode": {
             "extensions": [
