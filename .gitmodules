@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/Alejo-P/Servidor_apps_moviles.git
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/Alejo-P/Mi-primera-app-electron.git

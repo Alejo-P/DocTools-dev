@@ -1,0 +1,120 @@
+services:
+  # Frontend de la aplicación
+  # Este servicio construye la imagen del frontend y lo ejecuta en un contenedor
+  servidor-vite:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: servidor-vite
+    ports:
+      - "5173:5173"
+    networks:
+      - red
+    depends_on:
+      mysql-server:
+        condition: service_healthy
+      servidor-python:
+        condition: service_healthy
+    volumes:
+      - ./frontend:/app:cached
+    environment:
+      - ENV=${ENV}
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+      - VITE_BACKEND_URL_DEV=${VITE_BACKEND_URL_DEV}
+      - REACT_DEV_URL=${REACT_DEV_URL}
+
+
+  # Servidor de la aplicación Python
+  # Este servicio construye la imagen del servidor Python y lo ejecuta en un contenedor
+  servidor-python:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: servidor-python
+    ports:
+      - "5000:5000"
+    networks:
+      - red
+    depends_on:
+      mysql-server:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app:cached # 🔥 Usa un volumen administrado por Docker
+      - DocTools:/root/DocTools:cached # 🔥 Usa un volumen administrado por Docker
+    environment:
+      - DB_URI=${DB_URI}
+      - PYTHONUNBUFFERED=1
+      - AUTHJWT_SECRET_KEY=${AUTHJWT_SECRET_KEY}
+      - AUTHJWT_COOKIE_SECURE=${AUTHJWT_COOKIE_SECURE}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - JWT_ACCESS_TOKEN_EXPIRES=${JWT_ACCESS_TOKEN_EXPIRES}
+      - JWT_REFRESH_TOKEN_EXPIRES=${JWT_REFRESH_TOKEN_EXPIRES}
+      - JWT_ACCESS_CSRF_COOKIE=${JWT_ACCESS_CSRF_COOKIE}
+      - JWT_REFRESH_CSRF_COOKIE=${JWT_REFRESH_CSRF_COOKIE}
+      - ENV=${ENV}
+      - SECRET_KEY=${SECRET_KEY}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - CLOUDINARY_URL=${CLOUDINARY_URL}
+      - URL_FRONTEND=${URL_FRONTEND}
+      - URL_BACKEND=${URL_BACKEND}
+      - TIMEZONE=${TIMEZONE}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_SERVER=${MAIL_SERVER}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME}
+
+
+  # Servidor de base de datos MySQL
+  # Este servicio utiliza la imagen oficial de MySQL y configura un contenedor para la base de datos
+  mysql-server:
+    image: mysql:8.0
+    container_name: mysql-server
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - "3306:3306"
+    networks:
+      - red
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    volumes:
+      - mysql:/var/lib/mysql # 🔥 Usa un volumen administrado por Docker
+
+
+  # Servidor de administración de bases de datos PHPMyAdmin
+  # Este servicio utiliza la imagen oficial de PHPMyAdmin y lo configura para conectarse al servidor MySQL
+  phpmyadmin-server:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-server
+    environment:
+      PMA_HOST: ${DB_HOST}
+      PMA_USER: ${DB_USER}
+      PMA_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:8080:80"
+    networks:
+      - red
+    depends_on:
+      mysql-server:
+        condition: service_healthy
+
+
+networks:
+  red:
+    driver: bridge
+
+
+volumes:
+  mysql:
+    driver: local
+  DocTools:
+    driver: local
