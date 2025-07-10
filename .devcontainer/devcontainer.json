@@ -20,6 +20,5 @@
     },
     "remoteEnv": {
         "PYTHONUNBUFFERED": "1"
-    },
-    "postCreateCommand": "pip install -r requirements.txt && cd ../frontend && npm install --legacy-peer-deps && cd ../backend && pip install -r requirements.txt"
+    }
 }
