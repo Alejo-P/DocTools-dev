@@ -1,26 +1,4 @@
 services:
-  # # Frontend (Vite + React)
-  servidor-vite:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: servidor-vite
-    ports:
-      - "5173:5173"
-    networks:
-      - red
-    depends_on:
-      mysql-server:
-        condition: service_healthy
-    volumes:
-      - ./frontend:/app:cached
-    environment:
-      - ENV=${ENV}
-      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
-      - VITE_BACKEND_URL_DEV=${VITE_BACKEND_URL_DEV}
-      - REACT_DEV_URL=${REACT_DEV_URL}
-
-
   # Servidor de backend (Python + FastAPI)
   servidor-python:
     build:
